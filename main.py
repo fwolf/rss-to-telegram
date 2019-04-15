@@ -36,13 +36,14 @@ with open('posts.json') as f:
     f.close()
 
 for feed in feeds:
+    prefix = feed.feed.title + ' (' + feed.feed.authors[0].email + ')' + '\n\n'
     for entry in feed.entries:
         content = entry['description']
         post = {}
-        soup = BeautifulSoup(content, 'html.parser')
+        soup = BeautifulSoup(content, 'lxml')
         if soup.img:
             post['image'] = soup.img['src']
-        post['text'] = '\n'.join(soup.stripped_strings)
+        post['text'] = prefix + '\n'.join(soup.stripped_strings)
         post['text'] += '\n\n{}'.format(entry['link'])
         post['date'] = get_timestamp(entry['published'])
 
