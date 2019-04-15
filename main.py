@@ -2,6 +2,7 @@
 
 from bs4 import BeautifulSoup
 from datetime import datetime
+from dateutil.parser import parse
 from config import config
 import feedparser
 import telebot
@@ -10,7 +11,7 @@ import os
 
 
 def get_timestamp(dt):
-    return datetime.strptime(dt, '%a, %d %b %Y %H:%M:%S %z').timestamp()
+    return parse(dt).timestamp()
 
 
 bot = telebot.TeleBot(config.get('telegram-token'))
