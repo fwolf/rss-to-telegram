@@ -3,3 +3,4 @@ feedparser
 html5lib
 pymediainfo
 pyTelegramBotAPI
+python-dateutil
