@@ -1,3 +1,5 @@
-pyTelegramBotAPI
-feedparser
 beautifulsoup4
+feedparser
+html5lib
+pymediainfo
+pyTelegramBotAPI
