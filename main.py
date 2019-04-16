@@ -6,6 +6,7 @@ from dateutil.parser import parse
 from config import config
 from pymediainfo import MediaInfo
 from telebot.types import InputMediaAnimation, InputMediaPhoto, InputMediaVideo
+from html import escape
 import feedparser
 import telebot
 import json
@@ -24,6 +25,7 @@ KEEP_ATTRIBUTES = [
 
 def clean_tags(tag):
     if NavigableString == type(tag):
+        tag = escape(tag)
         return tag
 
     # 递归，先处理子结点，不然 unwrap 后本结点就变性了
