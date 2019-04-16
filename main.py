@@ -57,11 +57,11 @@ def is_video_has_sound(src):
 # https://stackoverflow.com/a/52315151/1759745
 def send_photo(bot, chat_id, url, caption):
     try :
-        bot.send_photo(chat_id, image, caption=caption, parse_mode='HTML')
+        bot.send_photo(chat_id, url, caption=caption, parse_mode='HTML')
     except telebot.apihelper.ApiException as e:
         # Upload as document first to get cached
-        bot.send_document(chat_id, image, caption='', parse_mode='HTML')
-        bot.send_photo(chat_id, image, caption=caption, parse_mode='HTML')
+        bot.send_document(chat_id, url, caption='', parse_mode='HTML')
+        bot.send_photo(chat_id, url, caption=caption, parse_mode='HTML')
 
 
 bot = telebot.TeleBot(config.get('telegram-token'))
