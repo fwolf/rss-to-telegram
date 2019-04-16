@@ -8,6 +8,7 @@ from pymediainfo import MediaInfo
 from telebot.types import InputMediaAnimation, InputMediaPhoto, InputMediaVideo
 from html import escape
 import feedparser
+import re
 import telebot
 import json
 import os
@@ -162,6 +163,10 @@ for feed in feeds:
         post['images'] = list(set(post['images']))
         post['videos'] = list(set(post['videos']))
         post['gifs'] = list(set(post['gifs']))
+
+        # Reveme weibo face
+        regex = re.compile(r'https?:\/\/img.t.sinajs.cn\/\w+\d+\/style\/images\/\w+\/face\/')
+        post['images'] = [i for i in post['images'] if not regex.match(i)]
 
         # Send
         chat_id = config.get('channel-id')
