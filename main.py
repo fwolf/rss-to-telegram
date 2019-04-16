@@ -165,7 +165,7 @@ for feed in feeds:
         post['gifs'] = list(set(post['gifs']))
 
         # Reveme weibo face
-        regex = re.compile(r'https?:\/\/img.t.sinajs.cn\/\w+\d+\/style\/images\/\w+\/face\/')
+        regex = re.compile(r'https?:\/\/\w*img\w*.\w+.sinajs.cn\/\w+\d+\/style\/images\/\w+\/face\/')
         post['images'] = [i for i in post['images'] if not regex.match(i)]
 
         # Send
