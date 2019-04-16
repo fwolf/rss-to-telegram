@@ -53,6 +53,17 @@ def is_video_has_sound(src):
     return hasSound
 
 
+# Some photo may meet size limit
+# https://stackoverflow.com/a/52315151/1759745
+def send_photo(bot, chat_id, url, caption):
+    try :
+        bot.send_photo(chat_id, image, caption=caption, parse_mode='HTML')
+    except telebot.apihelper.ApiException as e:
+        # Upload as document first to get cached
+        bot.send_document(chat_id, image, caption='', parse_mode='HTML')
+        bot.send_photo(chat_id, image, caption=caption, parse_mode='HTML')
+
+
 bot = telebot.TeleBot(config.get('telegram-token'))
 
 feeds = list()
@@ -147,7 +158,7 @@ for post in new_posts:
             caption = post.get('text')
 
             for image in post['images'] :
-                bot.send_photo(chat_id, image, caption=caption, parse_mode='HTML')
+                send_photo(bot, chat_id, image, caption)
                 caption = ''
             for video in post['videos'] :
                 bot.send_video(chat_id, video, caption=caption, parse_mode='HTML')
