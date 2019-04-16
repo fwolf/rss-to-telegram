@@ -67,7 +67,7 @@ def send_photo(bot, chat_id, url, caption):
 
 
 def fix_url(url):
-    if ('//' == url[0:1]) :
+    if ('//' == url[0:2]) :
         url = 'http:' + url
     return url
 
