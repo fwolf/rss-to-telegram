@@ -66,6 +66,8 @@ for feed in feeds:
     prefix = feed.feed.title + ' (' + feed.feed.authors[0].email + ')' + '\n\n'
     for entry in feed.entries:
         content = entry['description']
+        content = content.replace('<br>', '\n').replace('<br />', '\n')
+
         post = {}
         soup = BeautifulSoup(content, 'lxml')
         if soup.img:
@@ -75,7 +77,7 @@ for feed in feeds:
 
         post['text'] = prefix
         for part in soup.html.contents :
-            post['text'] += str(part) + '\n'
+            post['text'] += str(part)
         post['text'] += '\n\n{}'.format(entry['link'])
         post['date'] = get_timestamp(entry['published'])
 
