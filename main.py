@@ -64,6 +64,12 @@ def send_photo(bot, chat_id, url, caption):
         bot.send_photo(chat_id, url, caption=caption, parse_mode='HTML')
 
 
+def fix_url(url)
+    if ('//' == url[0:1]) :
+        url = 'http:' + url
+    return url
+
+
 bot = telebot.TeleBot(config.get('telegram-token'))
 
 feeds = list()
@@ -101,7 +107,7 @@ for feed in feeds:
         post['videos'] = []
         soup = BeautifulSoup(content, 'lxml')
         if soup.img:
-            post['images'].append(soup.img['src'])
+            post['images'].append(fix_url(soup.img['src']))
 
         clean_tags(soup.html.body)
 
@@ -121,13 +127,14 @@ for feed in feeds:
         #   gif: <link rel="enclosure" type="video/mp4" length="20395" href="https://cmx.social/system/media_attachments/files/001/901/927/original/314f914a5ac552f1.mp4"/>
         for link in entry.links :
             if 'enclosure' == link.rel :
+                url = fix_url(link.href)
                 if ('image' == link.type[0:5]) :
-                    post['images'].append(link.href)
+                    post['images'].append(url)
                 elif ('video' == link.type[0:5]) :
-                    if (is_video_has_sound(link.href)) :
-                        post['videos'].append(link.href)
+                    if (is_video_has_sound(url)) :
+                        post['videos'].append(url)
                     else :
-                        post['gifs'].append(link.href)
+                        post['gifs'].append(url)
 
 
 new_posts.sort(key=lambda x: x['date'])
