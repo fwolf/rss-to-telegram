@@ -117,10 +117,8 @@ for feed in feeds:
         post['text'] += '\n\n{}'.format(entry['link'])
         post['date'] = get_timestamp(entry['published'])
 
-        if entry['guid'] not in guids:
-            # TODO: strip guid with a regex like /d{4,}\/{?}$/
-            new_posts.append(post)
-            guids.append(entry['guid'])
+        if entry['guid'] in guids:
+            continue
 
         # Find images
         # video: <link rel="enclosure" type="video/mp4" length="2365692" href="https://cmx.social/system/media_attachments/files/001/901/934/original/812bfbf669d03cec.mp4"/>
@@ -136,53 +134,52 @@ for feed in feeds:
                     else :
                         post['gifs'].append(url)
 
-
-new_posts.sort(key=lambda x: x['date'])
-
-for post in new_posts:
-    chat_id = config.get('channel-id')
-    caption = ''
-    if (1 < (len(post['images']) + len(post['videos']))) :
-        bot.send_message(
-            chat_id,
-            post.get('text'),
-            parse_mode='HTML',
-            disable_web_page_preview=True
-            )
-
-        medias = []
-        for image in post['images'] :
-            medias.append(InputMediaPhoto(image))
-        for video in post['videos'] :
-            medias.append(InputMediaVideo(video))
-        bot.send_media_group(chat_id, medias)
-
-    else :
-        if (1024 < len(post.get('text').encode('utf8'))) :
+        # Send
+        chat_id = config.get('channel-id')
+        caption = ''
+        if (1 < (len(post['images']) + len(post['videos']))) :
             bot.send_message(
                 chat_id,
                 post.get('text'),
                 parse_mode='HTML',
                 disable_web_page_preview=True
                 )
-        else :
-            caption = post.get('text')
 
+            medias = []
             for image in post['images'] :
-                send_photo(bot, chat_id, image, caption)
-                caption = ''
+                medias.append(InputMediaPhoto(image))
             for video in post['videos'] :
-                bot.send_video(chat_id, video, caption=caption, parse_mode='HTML')
+                medias.append(InputMediaVideo(video))
+            bot.send_media_group(chat_id, medias)
+
+        else :
+            if (1024 < len(post.get('text').encode('utf8'))) :
+                bot.send_message(
+                    chat_id,
+                    post.get('text'),
+                    parse_mode='HTML',
+                    disable_web_page_preview=True
+                    )
+            else :
+                caption = post.get('text')
+
+                for image in post['images'] :
+                    send_photo(bot, chat_id, image, caption)
+                    caption = ''
+                for video in post['videos'] :
+                    bot.send_video(chat_id, video, caption=caption, parse_mode='HTML')
+                    caption = ''
+
+        # PR: https://github.com/eternnoir/pyTelegramBotAPI/pull/620 not approved
+            for gif in post['gifs'] :
+        #        bot.send_animation(chat_id, gif, caption=caption, parse_mode='HTML')
+                bot.send_document(chat_id, gif, caption=caption, parse_mode='HTML')
                 caption = ''
 
-# PR: https://github.com/eternnoir/pyTelegramBotAPI/pull/620 not approved
-    for gif in post['gifs'] :
-#        bot.send_animation(chat_id, gif, caption=caption, parse_mode='HTML')
-        bot.send_document(chat_id, gif, caption=caption, parse_mode='HTML')
-        caption = ''
 
-
-    # Save progress for each post, in case of error, will not dup send
-    with open('posts.json', 'w') as f:
-        json.dump(guids, f)
-        f.close()
+        # Save progress for each post, in case of error, will not dup send
+        # TODO: strip guid with a regex like /d{4,}\/{?}$/
+        guids.append(entry['guid'])
+        with open('posts.json', 'w') as f:
+            json.dump(guids, f)
+            f.close()
