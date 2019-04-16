@@ -73,6 +73,23 @@ def send_photo(bot, chat_id, url, caption):
         bot.send_photo(chat_id, url, caption=caption, parse_mode='HTML')
 
 
+def send_album(bot, chat_id, image_urls, video_urls):
+    medias = []
+    for url in image_urls :
+        medias.append(InputMediaPhoto(url))
+    for url in video_urls :
+        medias.append(InputMediaVideo(video))
+    try :
+        bot.send_media_group(chat_id, medias)
+
+    except telebot.apihelper.ApiException as e:
+        for url in image_urls :
+            bot.send_document(chat_id, url)
+        for url in image_urls :
+            bot.send_document(chat_id, url)
+        bot.send_media_group(chat_id, medias)
+
+
 def fix_url(url):
     if ('//' == url[0:2]) :
         url = 'http:' + url
@@ -156,13 +173,7 @@ for feed in feeds:
                 parse_mode='HTML',
                 disable_web_page_preview=True
                 )
-
-            medias = []
-            for image in post['images'] :
-                medias.append(InputMediaPhoto(image))
-            for video in post['videos'] :
-                medias.append(InputMediaVideo(video))
-            bot.send_media_group(chat_id, medias)
+            send_album(bot, chat_id, post['images'], post['videos'])
 
         else :
             if (1024 < len(post.get('text').encode('utf8'))) :
