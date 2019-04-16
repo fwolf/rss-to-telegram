@@ -141,6 +141,11 @@ for feed in feeds:
                     else :
                         post['gifs'].append(url)
 
+        # Unique medias
+        post['images'] = list(set(post['images']))
+        post['videos'] = list(set(post['videos']))
+        post['gifs'] = list(set(post['gifs']))
+
         # Send
         chat_id = config.get('channel-id')
         caption = ''
