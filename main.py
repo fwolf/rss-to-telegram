@@ -23,14 +23,21 @@ KEEP_ATTRIBUTES = [
 ]
 
 
-def clean_tags(tag):
+def clean_tags(tag, post):
     if NavigableString == type(tag):
         tag.string.replace_with(escape(tag))
         return tag
 
     # 递归，先处理子结点，不然 unwrap 后本结点就变性了
     for child in tag.contents :
-        clean_tags(child)
+        clean_tags(child, post)
+
+    if 'img' == tag.name :
+        if 'src' in tag.attrs :
+            post['images'].append(fix_url(tag.attrs['src']))
+        if 'title' in tag.attrs :
+            title = tag.attrs['title']
+            tag.insert_before(NavigableString('[' + title + ']'))
 
     if tag.name not in ['b', 'i', 'a', 'code', 'pre']:
         tag.unwrap()
@@ -109,7 +116,7 @@ for feed in feeds:
         if soup.img:
             post['images'].append(fix_url(soup.img['src']))
 
-        clean_tags(soup.html.body)
+        clean_tags(soup.html.body, post)
 
         post['text'] = prefix
         for part in soup.html.contents :
