@@ -86,7 +86,11 @@ with open('posts.json') as f:
     f.close()
 
 for feed in feeds:
-    prefix = feed.feed.title + ' (' + feed.feed.authors[0].email + ')' + '\n\n'
+    if ('atom10' == feed.version) :
+        prefix = feed.feed.title + ' (' + feed.feed.authors[0].email + ')' + '\n\n'
+    elif ('rss20' == feed.version) :
+        prefix = feed.channel.title + ' (' + feed.channel.link + ')' + '\n\n'
+
     for entry in feed.entries:
         content = entry['description']
         content = content.replace('<br>', '\n').replace('<br />', '\n')
