@@ -64,7 +64,7 @@ def send_photo(bot, chat_id, url, caption):
         bot.send_photo(chat_id, url, caption=caption, parse_mode='HTML')
 
 
-def fix_url(url)
+def fix_url(url):
     if ('//' == url[0:1]) :
         url = 'http:' + url
     return url
@@ -182,6 +182,7 @@ for post in new_posts:
         caption = ''
 
 
-with open('posts.json', 'w') as f:
-    json.dump(guids, f)
-    f.close()
+    # Save progress for each post, in case of error, will not dup send
+    with open('posts.json', 'w') as f:
+        json.dump(guids, f)
+        f.close()
