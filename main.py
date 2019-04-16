@@ -25,7 +25,7 @@ KEEP_ATTRIBUTES = [
 
 def clean_tags(tag):
     if NavigableString == type(tag):
-        tag = escape(tag)
+        tag.string.replace_with(escape(tag))
         return tag
 
     # 递归，先处理子结点，不然 unwrap 后本结点就变性了
@@ -81,8 +81,6 @@ if type(config.get('feeds')) == str:
 else:
     for feed in config.get('feeds'):
         feeds.append(feedparser.parse(feed))
-
-new_posts = []
 
 if not os.path.exists('posts.json'):
     with open('posts.json', 'w') as f:
